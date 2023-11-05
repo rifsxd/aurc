@@ -14,6 +14,10 @@
 #define MAX_INPUT_SIZE 512
 
 void sanitizeInput(const char *input, char *output, size_t size) {
+    if (strlen(input) >= size) {
+        fprintf(stderr, "Too many args.\n");
+        exit(1);
+    }
     strncpy(output, input, size - 1);
     output[size - 1] = '\0';
 }
@@ -31,11 +35,11 @@ int main(int argc, char *argv[]) {
         printf("Usage: %s <action> [package_name]\n", argv[0]);
         printf("\nActions:\n");
         printf("  " GREEN "update" GREEN RESET"           Update outdated system/user packages\n");
-        printf("  " GREEN "refresh" GREEN RESET"          Refresh Repository Database\n");
+        printf("  " GREEN "refresh" GREEN RESET"          Refresh repository database\n");
         printf("  " GREEN "install" RESET "          Install packages\n");
         printf("  " GREEN "install-local" RESET "    Install a local package\n");
         printf("  " GREEN "install-aur" RESET "      Install aur package\n");
-        printf("  " GREEN  "github" RESET "           Checkout gitHub repo\n");
+        printf("  " GREEN  "github" RESET "           Visit the gitHub repo!\n");
         printf("  " YELLOW "install-force" RESET "    Forcefully install packages\n");
         printf("  " YELLOW "modify-repo" RESET "      Modify arch repositories\n");
         printf("  " YELLOW "query" RESET "            Query if a package is installed\n");

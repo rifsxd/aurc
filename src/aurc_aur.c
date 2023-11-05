@@ -5,9 +5,28 @@
 #include <ctype.h>
 
 void queryAurRepo(char *packageName, char *message) {
+    size_t packageNameLen = strlen(packageName);
+
+    // Check the length of packageName and handle it if it's too long
+    if (packageNameLen > 400) {
+        printf("Package name is too long.\n");
+        return;
+    }
+
+    // Sanitize packageName by replacing non-alphanumeric characters with '_'
+    for (char *p = packageName; *p != '\0'; p++) {
+        if (!isalnum((unsigned char)*p)) {
+            *p = '_';
+        }
+    }
+
     char command[500];
     // Use snprintf to avoid buffer overflow
-    snprintf(command, sizeof(command), "curl -s 'https://aur.archlinux.org/rpc/?v=5&type=search&arg=%s' | jq -r '.results[] | .Name'", packageName);
+    int ret = snprintf(command, sizeof(command), "curl -s 'https://aur.archlinux.org/rpc/?v=5&type=search&arg=%s' | jq -r '.results[] | .Name'", packageName);
+    if (ret < 0 || ret >= sizeof(command)) {
+        printf("Command is too long or snprintf failed.\n");
+        return;
+    }
 
     FILE *fp = popen(command, "r");
     if (fp == NULL) {
@@ -17,6 +36,12 @@ void queryAurRepo(char *packageName, char *message) {
 
     char buffer[512];
     size_t bytesRead = fread(buffer, 1, sizeof(buffer) - 1, fp);
+    if (bytesRead == 0 && ferror(fp)) {
+        perror("fread");
+        pclose(fp);
+        return;
+    }
+
     if (bytesRead > 0) {
         buffer[bytesRead] = '\0';
         printf("%s '%s':\n%s\n", message, packageName, buffer);
