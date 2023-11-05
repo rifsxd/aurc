@@ -153,7 +153,7 @@ void searchPackage(char *packageName) {
     snprintf(command, sizeof(command), "pacman -Ss %s", packageName);
 
     // Execute the command to search for the package
-    system(command);
+    executeCommandWithUserShell(command);
 }
 
 // Function to remove packages with dependencies
@@ -201,4 +201,10 @@ void refreshRepo() {
 void modifyRepo() {
     // Execute the command to open the repository configuration file in Vim
     executeCommandWithUserShell("sudo vim /etc/pacman.d/mirrorlist");
+}
+
+// Function to list outdated packages
+void listOutdatedPackages() {
+    // Execute the command to list outdated packages
+    executeCommandWithUserShell("pacman -Qu");
 }

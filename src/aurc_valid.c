@@ -14,7 +14,7 @@ int isValidAction(const char *action) {
     // Define valid actions
     char *validActions[] = {
         "install", "install-force", "remove", "query", "search", "remove-dep",
-        "clear-aur-cache", "update", "refresh", "modify-repo", "remove-force",
+        "clear-aur-cache", "list-outdated", "update", "refresh", "modify-repo", "remove-force",
         "remove-force-dep", "search-aur", "install-aur", "install-local", "remove-orp",
         "github"
     };

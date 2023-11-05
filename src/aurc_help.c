@@ -19,6 +19,7 @@ void displayHelp(const char *programName) {
     printf("  " YELLOW "install-force" RESET "    Forcefully install packages\n");
     printf("  " YELLOW "modify-repo" RESET "      Modify arch repositories\n");
     printf("  " YELLOW "query" RESET "            Query if a package is installed\n");
+    printf("  " YELLOW "list-outdated" RESET "    List outdated base repo packages\n");
     printf("  " YELLOW "search" RESET "           Search for a package in the base repository\n");
     printf("  " YELLOW "search-aur" RESET "       Search for a package in the aur repository\n");
     printf("  " RED "remove" RESET "           Remove packages\n");

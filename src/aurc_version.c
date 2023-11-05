@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 // Aurc Version
-#define VERSION "0.0.3" // alpha state version .2!
+#define VERSION "0.0.4" // alpha state version .4!
 
 // Function to display the version
 void displayVersion() {

@@ -136,8 +136,10 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(action, "clear-aur-cache") == 0) {
         clearAurBuildCache();
         return 0;
+    } else if (strcmp(action, "list-outdated") == 0) {
+    listOutdatedPackages();
+    return 0;
     }
-
     return 0;
 }
 
