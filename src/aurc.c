@@ -6,21 +6,12 @@
 #include "aurc_aur.c"
 #include "aurc_shell.c"
 #include "aurc_version.c"
+#include "aurc_help.c"
 #include "aurc_pac.c"
 #include "aurc_alpm.c"
 #include "aurc_valid.c"
-
-#define MAX_PACKAGE_NAME_LENGTH 256
-#define MAX_INPUT_SIZE 512
-
-void sanitizeInput(const char *input, char *output, size_t size) {
-    if (strlen(input) >= size) {
-        fprintf(stderr, "Too many args.\n");
-        exit(1);
-    }
-    strncpy(output, input, size - 1);
-    output[size - 1] = '\0';
-}
+#include "aurc_sanitize.c"
+#include "aurc_git.c"
 
 int main(int argc, char *argv[]) {
     // Check for version flag
@@ -31,28 +22,7 @@ int main(int argc, char *argv[]) {
 
     // Check for help flag
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)) {
-        printf("Aurc Package Manager - Help\n\n");
-        printf("Usage: %s <action> [package_name]\n", argv[0]);
-        printf("\nActions:\n");
-        printf("  " GREEN "update" GREEN RESET"           Update outdated system/user packages\n");
-        printf("  " GREEN "refresh" GREEN RESET"          Refresh repository database\n");
-        printf("  " GREEN "install" RESET "          Install packages\n");
-        printf("  " GREEN "install-local" RESET "    Install a local package\n");
-        printf("  " GREEN "install-aur" RESET "      Install aur package\n");
-        printf("  " GREEN  "github" RESET "           Visit the gitHub repo!\n");
-        printf("  " YELLOW "install-force" RESET "    Forcefully install packages\n");
-        printf("  " YELLOW "modify-repo" RESET "      Modify arch repositories\n");
-        printf("  " YELLOW "query" RESET "            Query if a package is installed\n");
-        printf("  " YELLOW "search" RESET "           Search for a package in the base repository\n");
-        printf("  " YELLOW "search-aur" RESET "       Search for a package in the aur repository\n");
-        printf("  " RED "remove" RESET "           Remove packages\n");
-        printf("  " RED "remove-dep" RESET "       Remove packages along with its dependencies\n");
-        printf("  " RED "remove-force" RESET "     Forcefully remove packages even if other packages depend on it\n");
-        printf("  " RED "remove-force-dep" RESET " Forcefully remove packages even if other packages depend on it along with its dependencies\n");
-        printf("  " RED "remove-orp" RESET "       Remove orphan packages\n");
-        printf("\nOptions:\n");
-        printf("  --version, -v    Display the version of the package manager\n");
-        printf("  --help, -h       Display this help guide\n");
+        displayHelp(argv[0]);
         return 0;
     }
 
@@ -61,7 +31,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    char *action = argv[1];
+    char action[MAX_PACKAGE_NAME_LENGTH];
+    sanitizeInput(argv[1], action, sizeof(action));
 
     // Check if the action is valid
     if (!isValidAction(action)) {
@@ -93,18 +64,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     } else if (strcmp(action, "github") == 0) {
-        const char *url = "https://github.com/rifsxd/aurc";
-        printf("Opening GitHub...\n");
-        char sanitizedCommand[MAX_INPUT_SIZE];
-        snprintf(sanitizedCommand, sizeof(sanitizedCommand), "xdg-open %s >/dev/null 2>&1", url);
-        int result = system(sanitizedCommand);
-        if (result == 0) {
-            printf(GREEN "GitHub opened successfully!\n" RESET);
-            return 0;
-        } else {
-            printf(RED "Error: Failed to open GitHub!\n" RESET);
-            return 1;
-        }
+        openGitHub();
     } else if (strcmp(action, "search-aur") == 0) {
         if (argc == 3) {
             searchAurPackage(argv[2]);
@@ -180,3 +140,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
