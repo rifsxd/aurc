@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <bsd/string.h>
 #include "aurc_colors.c"
-#include <bsd/string.h>  // Include for strlcat
 
 #define MAX_COMMAND_LENGTH 500
 
@@ -26,12 +26,12 @@ void executePacmanCommand(int argc, char *argv[], const char *commandPrefix, con
 
         // Build the command string
         char command[MAX_COMMAND_LENGTH];
-        strncpy(command, commandPrefix, MAX_COMMAND_LENGTH);
+        strncpy(command, commandPrefix, sizeof(command));
 
         // Concatenate arguments to form the complete command
         for (int i = 2; i < argc; ++i) {
-            strncat(command, " ", MAX_COMMAND_LENGTH - strlen(command));
-            strncat(command, argv[i], MAX_COMMAND_LENGTH - strlen(command));
+            size_t remainingSpace = MAX_COMMAND_LENGTH - strlen(command);
+            snprintf(command + strlen(command), remainingSpace, " %s", argv[i]);
         }
 
         // Execute the command
@@ -206,5 +206,24 @@ void modifyRepo() {
 // Function to list outdated packages
 void listOutdatedPackages() {
     // Execute the command to list outdated packages
-    executeCommandWithUserShell("pacman -Qu");
+    char command[] = "pacman -Qu";
+    FILE *fp = popen(command, "r");
+
+    if (fp == NULL) {
+        perror("popen");
+        exit(EXIT_FAILURE);
+    }
+
+    char buffer[128];
+    size_t bytesRead = fread(buffer, 1, sizeof(buffer), fp);
+    fclose(fp);
+
+    if (bytesRead == 0) {
+        printf("\n");
+        printf("No packages are outdated.\n");
+        printf("\n");
+    } else {
+        // Execute the command with the user's shell
+        executeCommandWithUserShell("pacman -Qu");
+    }
 }
