@@ -220,7 +220,7 @@ void listOutdatedPackages() {
 
     if (bytesRead == 0) {
         printf("\n");
-        printf("No packages are outdated.\n");
+        printf("No packages are outdated. Run 'aurc refresh' to update the database.\n");
         printf("\n");
     } else {
         // Execute the command with the user's shell
